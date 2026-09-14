@@ -52,7 +52,7 @@ The application was designed to simplify daily operations by centralizing busine
 
 ### Dashboard
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](dash.png)
 
 
 ## 🏗️ Architecture
