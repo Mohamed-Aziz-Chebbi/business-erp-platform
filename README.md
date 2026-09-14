@@ -48,7 +48,7 @@ The application was designed to simplify daily operations by centralizing busine
 * Organize tasks and information
 * Provide a structured workflow for users
 
-## 🖥️ Application Screenshots
+## 🖥️ Application Screenshot
 
 ### Dashboard
 
