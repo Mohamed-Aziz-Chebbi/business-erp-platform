@@ -1,1 +1,845 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard SFM — Enhanced</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Red & Green palette */
+    --red-50:  #fef2f2;
+    --red-100: #fee2e2;
+    --red-200: #fecaca;
+    --red-500: #dc2626;
+    --red-600: #b91c1c;
+    --red-700: #991b1b;
+    --red-900: #450a0a;
 
+    --green-50:  #ecfdf5;
+    --green-100: #d1fae5;
+    --green-200: #a7f3d0;
+    --green-500: #10b981;
+    --green-600: #059669;
+    --green-700: #047857;
+    --green-900: #064e3b;
+
+    --ink-900: #0b1220;
+    --ink-700: #1f2937;
+    --ink-500: #4b5563;
+    --ink-400: #6b7280;
+    --ink-300: #9ca3af;
+    --ink-200: #e5e7eb;
+    --ink-100: #f3f4f6;
+    --ink-50:  #f8fafc;
+
+    --page: #f5f7fb;
+    --surface: #ffffff;
+    --border: #e6ebf3;
+    --border-strong: #cfd7e6;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .04);
+    --shadow:    0 6px 20px rgba(15, 23, 42, .07);
+    --shadow-lg: 0 24px 50px -16px rgba(185, 28, 28, .25), 0 8px 24px rgba(15, 23, 42, .08);
+
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(1200px 600px at -10% -10%, rgba(220, 38, 38, .06), transparent 60%),
+      radial-gradient(900px 500px at 110% 0%, rgba(16, 185, 129, .07), transparent 60%),
+      var(--page);
+    color: var(--ink-900);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ===== Layout shell ===== */
+  .app-shell {
+    display: grid;
+    grid-template-columns: 268px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    position: sticky; top: 0;
+    height: 100vh;
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+    border-right: 1px solid var(--border);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  .sidebar-brand {
+    display: flex; gap: 12px; align-items: center;
+    padding: 10px 10px 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .brand-logo {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    background:
+      linear-gradient(135deg, var(--red-600), var(--red-700));
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(185,28,28,.28), inset 0 1px 0 rgba(255,255,255,.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-logo::after {
+    content:""; position: absolute; inset: 0;
+    background: radial-gradient(60% 60% at 30% 20%, rgba(255,255,255,.25), transparent 60%);
+  }
+  .brand-logo i { font-size: 26px; }
+  .brand-meta { line-height: 1.1; min-width: 0; }
+  .brand-name { font-weight: 800; font-size: 16px; letter-spacing: .2px; color: var(--ink-900); }
+  .brand-sub { font-size: 11px; color: var(--ink-400); margin-top: 4px; text-transform: uppercase; letter-spacing: .12em; }
+
+  .nav-group {
+    margin: 14px 8px 4px;
+    color: var(--ink-300);
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-group::before {
+    content:""; width: 14px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--red-500), var(--green-500));
+  }
+
+  .nav-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    color: var(--ink-700);
+    text-decoration: none;
+    font-size: 13.5px; font-weight: 600;
+    transition: all .18s ease;
+    position: relative;
+  }
+  .nav-item i { color: var(--ink-400); font-size: 14px; }
+  .nav-item:hover {
+    background: var(--ink-50);
+    color: var(--ink-900);
+    border-color: var(--border);
+  }
+  .nav-item.active {
+    background: linear-gradient(180deg, var(--red-50), #fff);
+    border-color: var(--red-200);
+    color: var(--red-700);
+    box-shadow: inset 3px 0 0 var(--red-600), 0 1px 2px rgba(185,28,28,.08);
+  }
+  .nav-item.active i { color: var(--red-600); }
+  .nav-item .pill {
+    font-size: 10px; font-weight: 800;
+    padding: 2px 7px; border-radius: 999px;
+    background: var(--green-100); color: var(--green-700);
+    letter-spacing: .04em;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 10px 12px;
+    border-top: 1px dashed var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 999px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--green-600), var(--green-700));
+    color: #fff; font-weight: 800; font-size: 13px;
+    box-shadow: 0 4px 10px rgba(5,150,105,.25);
+  }
+  .user-meta { line-height: 1.1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 700; color: var(--ink-900); }
+  .user-role { font-size: 11px; color: var(--ink-400); margin-top: 3px; }
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--green-500);
+    box-shadow: 0 0 0 0 rgba(16,185,129,.6);
+    animation: pulse 1.8s infinite;
+    margin-left: auto;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16,185,129,.55); }
+    70%{ box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+  }
+
+  /* ===== Main panel ===== */
+  .main-panel { padding: 22px 28px 40px; min-width: 0; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar .crumbs {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--ink-400); font-weight: 600;
+  }
+  .crumb-sep { color: var(--ink-200); }
+  .page-title { margin: 4px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    height: 38px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    color: var(--ink-700);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .btn-ghost:hover { border-color: var(--red-500); color: var(--red-700); background: var(--red-50); }
+  .btn-ghost.green:hover { border-color: var(--green-500); color: var(--green-700); background: var(--green-50); }
+
+  /* ===== Hero greeting ===== */
+  .hero {
+    position: relative;
+    background:
+      radial-gradient(420px 220px at 90% -20%, rgba(16,185,129,.18), transparent 60%),
+      linear-gradient(135deg, #1a1d2b 0%, #0e1018 60%, #1a0a0a 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 26px 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px -12px rgba(11, 18, 32, .35);
+    margin-bottom: 22px;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; right: -60px; top: -60px;
+    width: 280px; height: 280px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(220,38,38,.45), transparent 60%);
+    filter: blur(2px);
+  }
+  .hero::after {
+    content: "";
+    position: absolute; left: -40px; bottom: -80px;
+    width: 220px; height: 220px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(16,185,129,.4), transparent 65%);
+    filter: blur(2px);
+  }
+  .hero-row {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: center; position: relative; z-index: 1;
+  }
+  .hero h1 {
+    margin: 0 0 6px;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.015em;
+  }
+  .hero h1 .accent { color: var(--green-200); }
+  .hero p { margin: 0; color: rgba(255,255,255,.75); font-size: 14px; max-width: 56ch; }
+  .hero-meta {
+    display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; color: rgba(255,255,255,.7);
+  }
+  .hero-meta .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--green-500); display: inline-block; margin-right: 6px; vertical-align: middle; }
+  .hero-cta {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .hero .cta-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, var(--red-500), var(--red-600));
+    color: #fff;
+    border-radius: 12px; border: 0;
+    font-weight: 700; font-size: 13px;
+    text-decoration: none;
+    box-shadow: 0 14px 28px -10px rgba(220,38,38,.6);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .hero .cta-primary:hover { transform: translateY(-1px); box-shadow: 0 18px 30px -10px rgba(220,38,38,.7); }
+  .hero .cta-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 16px;
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 12px;
+    font-weight: 600; font-size: 13px;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+  }
+  .hero .cta-secondary:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.28); }
+
+  /* ===== KPI strip ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .kpi {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--red-500);
+  }
+  .kpi.green::before { background: var(--green-500); }
+  .kpi.dark::before { background: var(--ink-900); }
+  .kpi-label { color: var(--ink-400); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .kpi-value {
+    font-size: 28px; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em;
+    font-feature-settings: "tnum" 1;
+  }
+  .kpi-foot {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    font-size: 12px; color: var(--ink-500); font-weight: 600;
+  }
+  .delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 800;
+  }
+  .delta.up { color: var(--green-700); background: var(--green-50); border: 1px solid var(--green-200); }
+  .delta.down { color: var(--red-700); background: var(--red-50); border: 1px solid var(--red-200); }
+  .kpi-spark {
+    position: absolute; right: 14px; top: 14px;
+    width: 64px; height: 28px;
+  }
+
+  /* ===== Module cards ===== */
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 4px 2px 14px;
+  }
+  .section-title { font-size: 16px; font-weight: 800; letter-spacing: -0.005em; margin: 0; }
+  .section-sub { font-size: 12.5px; color: var(--ink-400); font-weight: 500; }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .module-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    min-height: 200px;
+    display: flex; flex-direction: column;
+    text-decoration: none; color: inherit;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    overflow: hidden;
+  }
+  .module-card .corner {
+    position: absolute; right: -40px; top: -40px;
+    width: 140px; height: 140px;
+    border-radius: 999px;
+    opacity: .08;
+    background: var(--ink-900);
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  .module-card-active {
+    background:
+      radial-gradient(220px 130px at 110% -10%, rgba(16,185,129,.16), transparent 70%),
+      linear-gradient(180deg, #fff, #fff);
+    border-color: var(--red-200);
+  }
+  .module-card-active .corner { background: var(--red-500); opacity: .12; }
+  .module-card-active:hover {
+    transform: translateY(-2px);
+    border-color: var(--red-500);
+    box-shadow: var(--shadow-lg);
+  }
+  .module-card-active:hover .corner { transform: scale(1.15); opacity: .18; }
+
+  .module-card-soon {
+    background: linear-gradient(180deg, #fcfcfd, #fafbfc);
+    border-style: dashed;
+    border-color: var(--border-strong);
+    color: var(--ink-400);
+    cursor: not-allowed;
+  }
+  .module-card-soon .module-icon { background: var(--ink-100); color: var(--ink-400); box-shadow: none; }
+  .module-card-soon .corner { display: none; }
+
+  .module-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .module-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--red-500), var(--red-700));
+    color: #fff;
+    font-size: 22px;
+    box-shadow: 0 10px 20px -6px rgba(185,28,28,.45), inset 0 1px 0 rgba(255,255,255,.18);
+    position: relative;
+    z-index: 1;
+  }
+  .module-card.green .module-icon { background: linear-gradient(135deg, var(--green-500), var(--green-700)); box-shadow: 0 10px 20px -6px rgba(5,150,105,.45), inset 0 1px 0 rgba(255,255,255,.18); }
+
+  .module-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 800; letter-spacing: .03em;
+    background: var(--green-50); color: var(--green-700);
+    border: 1px solid var(--green-200);
+  }
+  .module-status .ico { width: 6px; height: 6px; border-radius: 999px; background: var(--green-500); box-shadow: 0 0 0 3px rgba(16,185,129,.18); }
+  .module-status.soon { background: var(--ink-100); color: var(--ink-500); border-color: var(--ink-200); }
+  .module-status.soon .ico { background: var(--ink-300); box-shadow: none; }
+
+  .module-title {
+    margin: 18px 0 4px;
+    font-size: 18px; font-weight: 800; color: var(--ink-900);
+    letter-spacing: -0.01em;
+  }
+  .module-card-soon .module-title { color: var(--ink-500); }
+  .module-desc {
+    font-size: 13px; color: var(--ink-500); line-height: 1.5;
+    margin: 0;
+  }
+
+  .module-foot {
+    margin-top: auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+    font-size: 12.5px; color: var(--ink-400); font-weight: 600;
+  }
+  .module-enter {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--red-700); font-weight: 800;
+    font-size: 13px;
+  }
+  .module-enter i { transition: transform .2s ease; }
+  .module-card-active:hover .module-enter i { transform: translateX(4px); }
+  .module-card.green .module-enter { color: var(--green-700); }
+
+  .module-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .module-tag {
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+    background: var(--ink-50); color: var(--ink-500);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== Activity / Quick actions row ===== */
+  .grid-mix {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 16px;
+  }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title { font-size: 14px; font-weight: 800; margin: 0; }
+  .panel-link { font-size: 12px; font-weight: 700; color: var(--red-600); text-decoration: none; }
+  .panel-link:hover { text-decoration: underline; }
+
+  .activity { padding: 6px 8px; }
+  .activity-row {
+    display: grid; grid-template-columns: 36px 1fr auto; gap: 12px;
+    align-items: center;
+    padding: 10px 10px;
+    border-radius: 10px;
+    transition: background .15s ease;
+  }
+  .activity-row:hover { background: var(--ink-50); }
+  .activity-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center;
+    color: #fff; font-size: 14px;
+  }
+  .activity-icon.red   { background: linear-gradient(135deg, var(--red-500), var(--red-600)); }
+  .activity-icon.green { background: linear-gradient(135deg, var(--green-500), var(--green-600)); }
+  .activity-icon.dark  { background: linear-gradient(135deg, #374151, #1f2937); }
+  .activity-text strong { font-size: 13px; color: var(--ink-900); font-weight: 700; }
+  .activity-text small { display: block; color: var(--ink-400); font-size: 11.5px; margin-top: 3px; }
+  .activity-amount {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px; font-weight: 700;
+    color: var(--ink-700);
+    white-space: nowrap;
+  }
+  .activity-amount.up { color: var(--green-700); }
+  .activity-amount.down { color: var(--red-700); }
+
+  .quick {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .quick-tile {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #fbfcfe);
+    text-decoration: none; color: inherit;
+    transition: all .18s ease;
+  }
+  .quick-tile:hover {
+    border-color: var(--red-500);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -10px rgba(185,28,28,.3);
+  }
+  .quick-tile.green:hover { border-color: var(--green-500); box-shadow: 0 10px 20px -10px rgba(5,150,105,.3); }
+  .quick-ico {
+    width: 32px; height: 32px; border-radius: 9px;
+    display: grid; place-items: center;
+    background: var(--red-50); color: var(--red-600);
+    font-size: 13px;
+  }
+  .quick-tile.green .quick-ico { background: var(--green-50); color: var(--green-600); }
+  .quick-label { font-size: 13px; font-weight: 700; color: var(--ink-900); }
+  .quick-sub { font-size: 11.5px; color: var(--ink-400); }
+
+  /* ===== Stamp / motif ===== */
+  .deco-stripe {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background: linear-gradient(90deg, var(--red-500) 0%, var(--red-500) 50%, var(--green-500) 50%, var(--green-500) 100%);
+    border-radius: 0 0 16px 16px;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .module-card-active:hover .deco-stripe { opacity: 1; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1180px) {
+    .module-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-mix { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .module-grid, .kpi-grid { grid-template-columns: 1fr; }
+    .hero-row { grid-template-columns: 1fr; }
+    .hero-cta { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo"><i class="fa-solid fa-gear"></i></div>
+      <div class="brand-meta">
+        <div class="brand-name">SFM — SARL</div>
+        <div class="brand-sub">Plateforme</div>
+      </div>
+    </div>
+
+    <div class="nav-group">Accueil</div>
+    <a class="nav-item active" href="#"><i class="fa-solid fa-house"></i><span>Tableau de bord</span></a>
+
+    <div class="nav-group">Gestion commerciale</div>
+    <a class="nav-item" href="#"><i class="fa-solid fa-file-signature"></i><span>Devis</span></a>
+    <a class="nav-item" href="#"><i class="fa-solid fa-file-invoice-dollar"></i><span>Factures</span><span class="pill">12</span></a>
+    <a class="nav-item" href="#"><i class="fa-solid fa-truck"></i><span>Bons de livraison</span></a>
+    <a class="nav-item" href="#"><i class="fa-solid fa-clipboard-list"></i><span>Commandes client</span></a>
+    <a class="nav-item" href="#"><i class="fa-solid fa-users"></i><span>Clients</span></a>
+
+    <div class="nav-group">Administration</div>
+    <a class="nav-item" href="#"><i class="fa-solid fa-sliders"></i><span>Paramètres</span></a>
+    <a class="nav-item" href="#"><i class="fa-solid fa-user-shield"></i><span>Utilisateurs et accès</span></a>
+
+    <div class="sidebar-footer">
+      <div class="avatar">SF</div>
+      <div class="user-meta">
+        <div class="user-name">Admin SFM</div>
+        <div class="user-role">Administrateur</div>
+      </div>
+      <span class="pulse-dot" title="En ligne"></span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main-panel">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div>
+        <div class="crumbs">
+          <i class="fa-solid fa-house"></i>
+          <span>SFM</span>
+          <span class="crumb-sep">/</span>
+          <span>Accueil</span>
+        </div>
+        <h1 class="page-title">Tableau de bord</h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-ghost"><i class="fa-regular fa-bell"></i> Alertes <span class="pill" style="background:var(--red-100);color:var(--red-700);font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;">3</span></button>
+        <button class="btn-ghost green"><i class="fa-solid fa-moon"></i> Mode sombre</button>
+        <button class="btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Déconnexion</button>
+      </div>
+    </header>
+
+    <!-- Hero greeting -->
+    <section class="hero">
+      <div class="hero-row">
+        <div>
+          <h1>Bonjour, <span class="accent">Admin SFM</span> 👋</h1>
+          <p>Bienvenue sur votre plateforme de gestion. Choisissez un module pour commencer — la gestion commerciale est <strong style="color:var(--green-200)">opérationnelle</strong>, les autres arrivent bientôt.</p>
+          <div class="hero-meta">
+            <span><span class="dot"></span> Système opérationnel</span>
+            <span>v2.0 · build 20260509</span>
+            <span>Dernière sync · il y a 2 min</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <a href="#" class="cta-primary"><i class="fa-solid fa-briefcase"></i> Ouvrir Gestion commerciale</a>
+          <a href="#" class="cta-secondary"><i class="fa-solid fa-circle-question"></i> Aide</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Devis en cours</div>
+        <div class="kpi-value">24</div>
+        <div class="kpi-foot"><span class="delta up"><i class="fa-solid fa-arrow-up"></i> 12%</span> vs. mois dernier</div>
+        <svg class="kpi-spark" viewBox="0 0 64 28" fill="none">
+          <polyline points="0,22 10,18 20,20 30,12 40,15 50,8 64,5" stroke="#dc2626" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="0,22 10,18 20,20 30,12 40,15 50,8 64,5 64,28 0,28" fill="rgba(220,38,38,.12)" stroke="none"/>
+        </svg>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Factures payées</div>
+        <div class="kpi-value">87 <small style="font-size:14px;color:var(--ink-400);font-weight:700;">/ 102</small></div>
+        <div class="kpi-foot"><span class="delta up"><i class="fa-solid fa-arrow-up"></i> 8%</span> taux 85.3%</div>
+        <svg class="kpi-spark" viewBox="0 0 64 28" fill="none">
+          <polyline points="0,20 10,16 20,18 30,10 40,8 50,6 64,3" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="0,20 10,16 20,18 30,10 40,8 50,6 64,3 64,28 0,28" fill="rgba(16,185,129,.14)" stroke="none"/>
+        </svg>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Bons de livraison</div>
+        <div class="kpi-value">15</div>
+        <div class="kpi-foot"><span class="delta down"><i class="fa-solid fa-arrow-down"></i> 3%</span> en attente</div>
+        <svg class="kpi-spark" viewBox="0 0 64 28" fill="none">
+          <polyline points="0,8 10,12 20,10 30,16 40,14 50,18 64,22" stroke="#dc2626" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="0,8 10,12 20,10 30,16 40,14 50,18 64,22 64,28 0,28" fill="rgba(220,38,38,.10)" stroke="none"/>
+        </svg>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Commandes actives</div>
+        <div class="kpi-value">31</div>
+        <div class="kpi-foot"><span class="delta up"><i class="fa-solid fa-arrow-up"></i> 5</span> nouvelles</div>
+        <svg class="kpi-spark" viewBox="0 0 64 28" fill="none">
+          <polyline points="0,18 10,14 20,16 30,10 40,11 50,7 64,9" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="0,18 10,14 20,16 30,10 40,11 50,7 64,9 64,28 0,28" fill="rgba(16,185,129,.14)" stroke="none"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Modules section -->
+    <div class="section-head">
+      <h2 class="section-title">Modules</h2>
+      <span class="section-sub">4 modules · 1 actif · 3 prochainement</span>
+    </div>
+
+    <section class="module-grid">
+
+      <a href="#" class="module-card module-card-active">
+        <div class="module-head">
+          <div class="module-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <span class="module-status"><span class="ico"></span> Actif</span>
+        </div>
+        <h3 class="module-title">Gestion commerciale</h3>
+        <p class="module-desc">Devis, factures, bons de livraison et commandes client.</p>
+        <div class="module-foot">
+          <div class="module-tags">
+            <span class="module-tag">Devis</span>
+            <span class="module-tag">Factures</span>
+            <span class="module-tag">+2</span>
+          </div>
+          <span class="module-enter">Ouvrir <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+        <div class="corner"></div>
+        <div class="deco-stripe"></div>
+      </a>
+
+      <section class="module-card module-card-soon">
+        <div class="module-head">
+          <div class="module-icon"><i class="fa-solid fa-calculator"></i></div>
+          <span class="module-status soon"><span class="ico"></span> Bientôt</span>
+        </div>
+        <h3 class="module-title">Comptabilité</h3>
+        <p class="module-desc">Plan comptable, journaux, balance, grand livre et états financiers.</p>
+        <div class="module-foot">
+          <div class="module-tags">
+            <span class="module-tag">Q3 2026</span>
+          </div>
+          <span style="color:var(--ink-300);"><i class="fa-solid fa-lock"></i></span>
+        </div>
+      </section>
+
+      <section class="module-card module-card-soon">
+        <div class="module-head">
+          <div class="module-icon"><i class="fa-solid fa-money-check-dollar"></i></div>
+          <span class="module-status soon"><span class="ico"></span> Bientôt</span>
+        </div>
+        <h3 class="module-title">Paie</h3>
+        <p class="module-desc">Bulletins de salaire, déclarations sociales et historiques employés.</p>
+        <div class="module-foot">
+          <div class="module-tags">
+            <span class="module-tag">Q4 2026</span>
+          </div>
+          <span style="color:var(--ink-300);"><i class="fa-solid fa-lock"></i></span>
+        </div>
+      </section>
+
+      <section class="module-card module-card-soon">
+        <div class="module-head">
+          <div class="module-icon"><i class="fa-solid fa-building-columns"></i></div>
+          <span class="module-status soon"><span class="ico"></span> Bientôt</span>
+        </div>
+        <h3 class="module-title">Immobilisations</h3>
+        <p class="module-desc">Suivi des actifs, amortissements et inventaire physique.</p>
+        <div class="module-foot">
+          <div class="module-tags">
+            <span class="module-tag">2027</span>
+          </div>
+          <span style="color:var(--ink-300);"><i class="fa-solid fa-lock"></i></span>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- Activity + quick actions -->
+    <div class="grid-mix">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">Activité récente</h3>
+          <a href="#" class="panel-link">Voir tout →</a>
+        </div>
+        <div class="activity">
+          <div class="activity-row">
+            <div class="activity-icon green"><i class="fa-solid fa-check"></i></div>
+            <div class="activity-text">
+              <strong>Facture FA-2026-0142 réglée</strong>
+              <small>Client · STE Industries · il y a 12 min</small>
+            </div>
+            <div class="activity-amount up">+ 12 480 DT</div>
+          </div>
+          <div class="activity-row">
+            <div class="activity-icon red"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <div class="activity-text">
+              <strong>Nouvelle facture émise</strong>
+              <small>FA-2026-0148 · Sté MetalPro · il y a 1 h</small>
+            </div>
+            <div class="activity-amount">8 920 DT</div>
+          </div>
+          <div class="activity-row">
+            <div class="activity-icon green"><i class="fa-solid fa-truck"></i></div>
+            <div class="activity-text">
+              <strong>Bon de livraison signé</strong>
+              <small>BL-2026-0089 · livré ce matin</small>
+            </div>
+            <div class="activity-amount up">Livré</div>
+          </div>
+          <div class="activity-row">
+            <div class="activity-icon dark"><i class="fa-solid fa-file-signature"></i></div>
+            <div class="activity-text">
+              <strong>Devis DV-2026-0203 envoyé</strong>
+              <small>Client · Acier &amp; Co · hier 17:42</small>
+            </div>
+            <div class="activity-amount">23 100 DT</div>
+          </div>
+          <div class="activity-row">
+            <div class="activity-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="activity-text">
+              <strong>Facture en retard</strong>
+              <small>FA-2026-0091 · échue depuis 6 jours</small>
+            </div>
+            <div class="activity-amount down">- 4 560 DT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">Actions rapides</h3>
+          <span class="section-sub">Raccourcis</span>
+        </div>
+        <div class="quick">
+          <a href="#" class="quick-tile">
+            <div class="quick-ico"><i class="fa-solid fa-plus"></i></div>
+            <div class="quick-label">Nouveau devis</div>
+            <div class="quick-sub">Créer en 30 sec</div>
+          </a>
+          <a href="#" class="quick-tile green">
+            <div class="quick-ico"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+            <div class="quick-label">Nouvelle facture</div>
+            <div class="quick-sub">Depuis un devis</div>
+          </a>
+          <a href="#" class="quick-tile">
+            <div class="quick-ico"><i class="fa-solid fa-truck"></i></div>
+            <div class="quick-label">Bon de livraison</div>
+            <div class="quick-sub">Préparer une livraison</div>
+          </a>
+          <a href="#" class="quick-tile green">
+            <div class="quick-ico"><i class="fa-solid fa-user-plus"></i></div>
+            <div class="quick-label">Ajouter un client</div>
+            <div class="quick-sub">Carnet clients</div>
+          </a>
+          <a href="#" class="quick-tile">
+            <div class="quick-ico"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div class="quick-label">Commande client</div>
+            <div class="quick-sub">Suivi production</div>
+          </a>
+          <a href="#" class="quick-tile green">
+            <div class="quick-ico"><i class="fa-solid fa-download"></i></div>
+            <div class="quick-label">Export du mois</div>
+            <div class="quick-sub">Excel / PDF</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
